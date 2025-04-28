@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taksi Sifarişi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Raleway', sans-serif;
+      background: linear-gradient(to right, #d4fc79, #96e6a1);
+      padding: 40px 20px;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      transition: 0.3s ease;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2d3436;
+      margin-bottom: 25px;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: 0.3s ease;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #27ae60;
+      transform: scale(1.02);
+    }
+
+    #responseMessage {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Taksi Sifarişi Ver</h1>
+    <form id="taxiOrderForm">
+      <div class="form-group">
+        <label for="currentAddress">Müştəri Adresi:</label>
+        <input type="text" id="currentAddress" name="currentAddress" required>
+      </div>
+      <div class="form-group">
+        <label for="destinationAddress">Gedəcəyi Adres:</label>
+        <input type="text" id="destinationAddress" name="destinationAddress" required>
+      </div>
+      <div class="form-group">
+        <label for="additionalInfo">Əlavə məlumat:</label>
+        <textarea id="additionalInfo" name="additionalInfo" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="coordinates">Buna toxunma</label>
+        <input type="text" id="coordinates" name="coordinates" value="41.629322, 46.648004" required>
+      </div>
+      <div class="form-group">
+        <label for="userId">Buna toxunma</label>
+        <input type="text" id="userId" name="userId" value="680208c697715af83884bf47" required>
+      </div>
+      <div class="form-group">
+        <label for="tel">Telefon:</label>
+        <input type="text" id="tel" name="tel" required>
+      </div>
+      <div class="form-group">
+        <label for="name">Ad:</label>
+        <input type="text" id="name" name="name" value="Arda Ofis" required>
+      </div>
+      <div class="form-group">
+        <label for="price">Qiymət:</label>
+        <input type="number" id="price" name="price" step="0.01" required>
+      </div>
+      <button type="submit">Sifariş Ver</button>
+    </form>
+    <div id="responseMessage"></div>
+  </div>
+
+  <script>
+    document.getElementById('taxiOrderForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch('/api/taxis/request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+        document.getElementById('responseMessage').textContent = result.message || 'İşlem başarılı!';
+        document.getElementById('responseMessage').style.color = result.success ? 'green' : 'red';
+        alert('Sifariş verildi!');
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('responseMessage').textContent = 'Bir hata oluştu!';
+        document.getElementById('responseMessage').style.color = 'red';
+      }
+    });
+  </script>
+
+</body>
+</html>

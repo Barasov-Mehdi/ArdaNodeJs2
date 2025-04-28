@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arda Taksi</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        nav ul li a:hover {
+            background: #e8491d;
+        }
+
+        .container1 {
+            width: 500px;
+            margin: 10px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .container2 {
+            width: 300px;
+            margin: 10px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .flex-container {
+            display: flex;
+            justify-content: space-around;
+            /* İki div arasında eşit boşluk */
+            margin: 50px auto;
+            /* Merkeze yerleştirmek için */
+        }
+
+        h2 {
+            color: #35424a;
+        }
+
+        .order-item {
+            border: 1px solid #e8491d;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            transition: background 0.3s;
+        }
+
+        .order-item:hover {
+            background-color: #f1f1f1;
+        }
+
+        #orderList {
+            height: 350px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+            background-color: #ffffff;
+        }
+
+        .order-item p {
+            margin: 5px 0;
+        }
+
+        #driverList {
+            height: 250px;
+            overflow-y: scroll;
+            border: 1px solid #e8491d;
+            padding: 10px;
+
+        }
+
+        .update-limit {
+            margin-top: 10px;
+            padding: 15px;
+            border: 1px solid #dddddd;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .update-limit label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        #updateLimitButton {
+            background: #e8491d;
+            color: #ffffff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #updateLimitButton:hover {
+            background: #d7361b;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #35424a;
+            color: #ffffff;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        .driver-item {
+            width: 250px;
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Arda Taksi</h1>
+        <nav>
+            <ul>
+                <li><a href="/register/driver">Sürücü Qeydiyyat</a></li>
+                <li><a href="/order/taxi">Taksi Sifarişi Ver</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="flex-container">
+        <div class="container1">
+            <h2>Ofis Sifarişləri</h2>
+            <div id="orderList"></div>
+        </div>
+
+        <div class="container2">
+            <h2>Sürücülərin Balansı</h2>
+            <div class="driver-list" id="driverList">
+                <!-- Sürücü listesi burada yüklenecek -->
+            </div>
+        </div>
+
+        <div class="container update-limit">
+            <h3>Balansı Yenilə</h3>
+            <label for="driverSelect">Sürücü Seçin:</label>
+            <select id="driverSelect" onchange="loadDriverLimit()">
+                <option value="">Bir sürücü seçin</option>
+            </select>
+            <label for="newLimit">Yeni Balans:</label>
+            <input type="number" id="newLimit" required>
+            <button id="updateLimitButton" onclick="updateLimit()">Yenilə</button>
+        </div>
+    </div>
+
+
+
+    <footer>
+        <p>© Arda Taksi - Bütün hakları saklıdır.</p>
+    </footer>
+
+    <script>
+        async function fetchUserOrders() {
+            const userId = '680208c697715af83884bf47';
+            const response = await fetch(`/api/taxis/userRequests/${userId}`);
+
+            if (response.ok) {
+                const orders = await response.json();
+                const orderList = document.getElementById('orderList');
+
+                if (orders.length === 0) {
+                    orderList.innerHTML = '<p>Bu kullanıcıya ait sipariş bulunamadı.</p>';
+                } else {
+                    orders.forEach(order => {
+                        const orderItem = document.createElement('div');
+                        orderItem.className = 'order-item';
+                        orderItem.innerHTML = `
+                            <p><strong>Müştəri Adresi:</strong> ${order.currentAddress}</p>
+                            <p><strong>Gediləcək Adres:</strong> ${order.destinationAddress}</p>
+                            <p><strong>Əlavə məlumat:</strong> ${order.additionalInfo || 'Yok'}</p>
+                            <p><strong>Qiymət:</strong> ${order.price.toFixed(2)} ₼</p>
+                            <p><strong>Qəbul :</strong> ${order.isConfirmed ? 'Edildi' : 'Edilməmiş'}</p>
+                            <br>
+                            ${order.driverDetails ? `
+                                <p><strong>Təsdiqləyən Sürücü:</strong> ${order.driverDetails.firstName}</p>
+                                <p><strong>Maşın nömrəsi:</strong> ${order.driverDetails.carPlate}</p>
+                                <p><strong>Şofer tel no:</strong> ${order.driverDetails.phone}</p>
+                            ` : ''}
+                        `;
+                        orderList.appendChild(orderItem);
+                    });
+                }
+            } else {
+                const errorMessage = await response.json();
+                document.getElementById('orderList').innerHTML = `<p>${errorMessage.message}</p>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchUserOrders);
+
+        let driversData = [];
+
+        async function fetchDrivers() {
+            const response = await fetch('/api/drivers/get-drivers');
+            if (response.ok) {
+                driversData = await response.json();
+                const driverList = document.getElementById('driverList');
+                const driverSelect = document.getElementById('driverSelect');
+                driverList.innerHTML = ''; // Önceki listeyi temizle
+                driverSelect.innerHTML = ''; // Seçenekleri temizle
+
+                driversData.forEach(driver => {
+                    const driverItem = document.createElement('div');
+
+                    driverItem.className = 'driver-item';
+                    driverItem.innerHTML = `
+                <span><strong>${driver.firstName} ${driver.lastName}</strong></span>
+                <span>Balans: <span class="limit">${driver.limit !== null ? driver.limit : '0'} ₼</span></span>
+            `;
+                    driverList.appendChild(driverItem);
+
+                    const option = document.createElement('option');
+                    option.value = driver._id; // Doğru ID'yi alıyor mu kontrol edin
+                    option.textContent = `${driver.firstName} ${driver.lastName}`;
+                    driverSelect.appendChild(option);
+                });
+            } else {
+                console.error('Sürücüler alınırken hata oluştu.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchDrivers);
+
+        function loadDriverLimit() {
+            const selectedDriverId = document.getElementById('driverSelect').value;
+            const selectedDriver = driversData.find(driver => driver._id === selectedDriverId);
+
+            if (selectedDriver) {
+                document.getElementById('newLimit').value = selectedDriver.limit; // Seçilen sürücünün limitini yükle
+            } else {
+                document.getElementById('newLimit').value = ''; // Temizle
+            }
+        }
+
+        async function updateLimit() {
+            const selectedDriverId = document.getElementById('driverSelect').value;
+            const newLimit = document.getElementById('newLimit').value;
+
+            if (!selectedDriverId) {
+                alert('Lütfen bir sürücü seçin.');
+                return;
+            }
+
+            const numericNewLimit = parseFloat(newLimit);
+            if (isNaN(numericNewLimit) || numericNewLimit <= 0) {
+                alert('Lütfen geçerli bir limit değeri girin.');
+                return;
+            }
+
+            const response = await fetch(`/api/drivers/${selectedDriverId}/updateLimit`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ limit: numericNewLimit }),
+            });
+
+            if (response.ok) {
+                alert('Limit başarıyla güncellendi!');
+                fetchDrivers();
+            } else {
+                const errorData = await response.json();
+                alert(`Limit güncellenirken hata oluştu: ${errorData.msg}`);
+            }
+        }
+    </script>
+
+</body>
+
+</html>
