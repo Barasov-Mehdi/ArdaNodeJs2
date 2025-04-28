@@ -65,7 +65,8 @@ const DriversSchema = new mongoose.Schema({
     onOrder: {
         type: Boolean,
         default: false, // Default value is false
-    }
+    },
+    
 });
 
 module.exports = mongoose.model('Drivers', DriversSchema);

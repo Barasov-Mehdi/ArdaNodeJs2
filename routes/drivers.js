@@ -132,18 +132,18 @@ router.put('/:id', async (req, res) => {
 // GET method to check the onOrder status of a driver
 router.get('/:id/onOrderStatus', async (req, res) => {
     try {
-        const driver = await Drivers.findById(req.params.id);
-        if (!driver) {
-            return res.status(404).json({ msg: 'Driver not found' });
-        }
-        
-        // Send back the onOrder status
-        res.json({ onOrder: driver.onOrder });
+      const driver = await Drivers.findById(req.params.id);
+      if (!driver) {
+        return res.status(404).json({ msg: 'Driver not found' });
+      }
+      
+      // Send back the `onOrder` status
+      res.json({ onOrder: driver.onOrder });
     } catch (error) {
-        console.error("Error fetching driver:", error);
-        res.status(500).json({ msg: 'Server error', error: error.message });
+      console.error("Error fetching driver:", error);
+      res.status(500).json({ msg: 'Server error', error: error.message });
     }
-});
+  });
 
 // Get accepted orders for a specific driver
 router.get('/my-orders/:driverId', async (req, res) => {
@@ -394,4 +394,5 @@ router.get('/:id/dailyEarnings', async (req, res) => {
         res.status(500).json({ msg: 'Server error', error: error.message });
     }
 });
+
 module.exports = router;
