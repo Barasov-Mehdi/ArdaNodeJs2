@@ -66,6 +66,10 @@ const DriversSchema = new mongoose.Schema({
         type: Boolean,
         default: false, // Default value is false
     },
+    lastOrderId: {
+        type: mongoose.Types.ObjectId, // Sipariş ID'si, ObjectId türünde
+        default: null // Başlangıçta null
+    },
     
 });
 

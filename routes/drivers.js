@@ -5,8 +5,8 @@ const Drivers = require('../models/Driver');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cron = require('node-cron');
-
 const haversine = require('haversine');
+const TaxiRequest = require('../models/taxiRequest');
 
 router.get('/available-orders/:driverId', async (req, res) => {
     const { lat, lng } = req.body; // The current lat/lng of the driver
@@ -104,8 +104,35 @@ router.post('/register', async (req, res) => {
     }
 });
 
+// router.put('/:id', async (req, res) => {
+//     const { atWork, onOrder } = req.body;
+
+//     try {
+//         const driver = await Drivers.findById(req.params.id);
+//         if (!driver) {
+//             return res.status(404).json({ msg: 'Driver not found' });
+//         }
+
+//         // Update the required fields
+//         if (typeof atWork !== 'undefined') {
+//             driver.atWork = atWork;
+//         }
+//         if (typeof onOrder !== 'undefined') {
+//             driver.onOrder = onOrder;
+//         }
+
+//         await driver.save();
+//         res.json(driver);
+//     } catch (error) {
+//         console.error("Error updating driver:", error);
+//         res.status(500).json({ msg: 'Server error', error: error.message });
+//     }
+// });
+
+// GET method to check the onOrder status of a driver
+
 router.put('/:id', async (req, res) => {
-    const { atWork, onOrder } = req.body;
+    const { atWork, onOrder, lastOrderId } = req.body;
 
     try {
         const driver = await Drivers.findById(req.params.id);
@@ -113,12 +140,15 @@ router.put('/:id', async (req, res) => {
             return res.status(404).json({ msg: 'Driver not found' });
         }
 
-        // Update the required fields
+        // Gerekli alanların güncellenmesi
         if (typeof atWork !== 'undefined') {
             driver.atWork = atWork;
         }
         if (typeof onOrder !== 'undefined') {
             driver.onOrder = onOrder;
+        }
+        if (lastOrderId) {
+            driver.lastOrderId = lastOrderId; // lastOrderId güncelle
         }
 
         await driver.save();
@@ -129,21 +159,20 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// GET method to check the onOrder status of a driver
 router.get('/:id/onOrderStatus', async (req, res) => {
     try {
-      const driver = await Drivers.findById(req.params.id);
-      if (!driver) {
-        return res.status(404).json({ msg: 'Driver not found' });
-      }
-      
-      // Send back the `onOrder` status
-      res.json({ onOrder: driver.onOrder });
+        const driver = await Drivers.findById(req.params.id);
+        if (!driver) {
+            return res.status(404).json({ msg: 'Driver not found' });
+        }
+
+        // Send back the `onOrder` status
+        res.json({ onOrder: driver.onOrder });
     } catch (error) {
-      console.error("Error fetching driver:", error);
-      res.status(500).json({ msg: 'Server error', error: error.message });
+        console.error("Error fetching driver:", error);
+        res.status(500).json({ msg: 'Server error', error: error.message });
     }
-  });
+});
 
 // Get accepted orders for a specific driver
 router.get('/my-orders/:driverId', async (req, res) => {
@@ -392,6 +421,28 @@ router.get('/:id/dailyEarnings', async (req, res) => {
     } catch (error) {
         console.error('Error fetching daily earnings:', error);
         res.status(500).json({ msg: 'Server error', error: error.message });
+    }
+});
+
+
+
+
+
+
+router.get('/:driverId/last-order', async (req, res) => {
+    try {
+        const { driverId } = req.params;
+
+        const lastOrder = await TaxiRequest.findOne({ driverId }).sort({ createdAt: -1 }).populate('userId', 'name tel');
+
+        if (!lastOrder) {
+            return res.status(404).json({ message: 'Bu sürücü için sipariş bulunamadı.' });
+        }
+
+        res.json(lastOrder);
+    } catch (error) {
+        console.error('Son siparişi getirirken bir hata oluştu: ', error); // Detaylı hata yazdır
+        res.status(500).json({ message: 'Son siparişi getirirken bir hata oluştu.', error: error.message });
     }
 });
 
