@@ -66,8 +66,6 @@ router.post('/updateLocation', async (req, res) => {
     }
 });
 
-// Driver registration route
-// Driver registration route
 router.post('/register', async (req, res) => {
     const { firstName, lastName, phone, carPlate, carModel, carColor, email, password } = req.body;
 
@@ -105,7 +103,7 @@ router.post('/register', async (req, res) => {
 });
 
 // router.put('/:id', async (req, res) => {
-//     const { atWork, onOrder } = req.body;
+//     const { atWork, onOrder, lastOrderId } = req.body;
 
 //     try {
 //         const driver = await Drivers.findById(req.params.id);
@@ -113,12 +111,15 @@ router.post('/register', async (req, res) => {
 //             return res.status(404).json({ msg: 'Driver not found' });
 //         }
 
-//         // Update the required fields
+//         // Gerekli alanların güncellenmesi
 //         if (typeof atWork !== 'undefined') {
 //             driver.atWork = atWork;
 //         }
 //         if (typeof onOrder !== 'undefined') {
 //             driver.onOrder = onOrder;
+//         }
+//         if (lastOrderId) {
+//             driver.lastOrderId = lastOrderId; // Update lastOrderId
 //         }
 
 //         await driver.save();
@@ -129,18 +130,15 @@ router.post('/register', async (req, res) => {
 //     }
 // });
 
-// GET method to check the onOrder status of a driver
-
 router.put('/:id', async (req, res) => {
-    const { atWork, onOrder, lastOrderId } = req.body;
-
     try {
         const driver = await Drivers.findById(req.params.id);
         if (!driver) {
             return res.status(404).json({ msg: 'Driver not found' });
         }
 
-        // Gerekli alanların güncellenmesi
+        const { atWork, onOrder, lastOrderId, lastOrderIds } = req.body;
+
         if (typeof atWork !== 'undefined') {
             driver.atWork = atWork;
         }
@@ -148,7 +146,10 @@ router.put('/:id', async (req, res) => {
             driver.onOrder = onOrder;
         }
         if (lastOrderId) {
-            driver.lastOrderId = lastOrderId; // lastOrderId güncelle
+            driver.lastOrderId = lastOrderId; // Eğer güncellemek isteniyorsa
+        }
+        if (lastOrderIds && lastOrderIds.length > 0) {
+            driver.lastOrderIds.push(...lastOrderIds); // Yeni siparişi diziye ekle
         }
 
         await driver.save();
@@ -158,6 +159,7 @@ router.put('/:id', async (req, res) => {
         res.status(500).json({ msg: 'Server error', error: error.message });
     }
 });
+
 
 router.get('/:id/onOrderStatus', async (req, res) => {
     try {
@@ -174,7 +176,6 @@ router.get('/:id/onOrderStatus', async (req, res) => {
     }
 });
 
-// Get accepted orders for a specific driver
 router.get('/my-orders/:driverId', async (req, res) => {
     try {
         const requests = await TaxiRequest.find({ driverId: req.params.driverId, isTaken: true });
@@ -233,7 +234,6 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Get driver details including orders
 router.get('/profile/:id', async (req, res) => {
     try {
         const driver = await Drivers.findById(req.params.id).select('-password');
@@ -245,7 +245,6 @@ router.get('/profile/:id', async (req, res) => {
     }
 });
 
-// routes/drivers.js
 router.put('/:id/updateOrderCount', async (req, res) => {
     try {
         const driver = await Drivers.findById(req.params.id);
@@ -260,7 +259,6 @@ router.put('/:id/updateOrderCount', async (req, res) => {
     }
 });
 
-// Her 5 saniyede bir günlük sipariş sayısını sıfırlar
 setInterval(async () => {
     try {
         await Drivers.updateMany({}, { dailyOrderCount: 0, dailyEarnings: 0, }); // Tüm sürücülerin sipariş sayısını sıfıra indir
@@ -296,7 +294,6 @@ router.put('/:id/updateLimit', async (req, res) => {
     }
 });
 
-// Sürücü limitlerini alma rotası
 router.get('/:id/limit', async (req, res) => {
     try {
         const driver = await Drivers.findById(req.params.id).select('limit');
@@ -309,7 +306,6 @@ router.get('/:id/limit', async (req, res) => {
     }
 });
 
-// Tüm sürücüleri ve limit bilgilerini alma rotası
 router.get('/get-drivers', async (req, res) => {
     try {
         // firstName, lastName, limit ve _id alanlarını alıyoruz (_id varsayılan olarak gelir)
@@ -321,7 +317,6 @@ router.get('/get-drivers', async (req, res) => {
     }
 });
 
-// Sürücüye puan verme endpoint'i
 router.post('/:driverId/rate', async (req, res) => {
     const { driverId } = req.params;
     const { rating } = req.body;
@@ -411,7 +406,6 @@ router.put('/:id/updateDailyEarnings', async (req, res) => {
     }
 });
 
-// Get daily earnings of a specific driver
 router.get('/:id/dailyEarnings', async (req, res) => {
     try {
         const driver = await Drivers.findById(req.params.id);
@@ -424,26 +418,27 @@ router.get('/:id/dailyEarnings', async (req, res) => {
     }
 });
 
-
-
-
-
-
-router.get('/:driverId/last-order', async (req, res) => {
+router.get('/:driverId/last-order-id', async (req, res) => {
     try {
-        const { driverId } = req.params;
+        // Sadece iptal edilmemiş ve 0'dan büyük fiyatı olan en son siparişi al
+        const lastOrder = await TaxiRequest.findOne({
+            driverId: req.params.driverId,
+            status: { $ne: 'canceled' },
+            price: { $gt: 0 }  // Fiyatı 0'dan büyük olan siparişler
+        })
+        .sort({ _id: -1 }) // En son siparişi almak için _id'ye göre azalan sırada
+        .select('_id'); // Sadece ID'yi seçelim
 
-        const lastOrder = await TaxiRequest.findOne({ driverId }).sort({ createdAt: -1 }).populate('userId', 'name tel');
+        console.log(`Fetched Last Order ID for Driver ID ${req.params.driverId}:`, lastOrder);
 
         if (!lastOrder) {
-            return res.status(404).json({ message: 'Bu sürücü için sipariş bulunamadı.' });
+            return res.status(404).json({ message: 'Bu sürücü için geçerli sipariş bulunamadı.' });
         }
 
-        res.json(lastOrder);
+        res.json({ orderId: lastOrder._id });  // Son siparişin ID'sini döndür
     } catch (error) {
-        console.error('Son siparişi getirirken bir hata oluştu: ', error); // Detaylı hata yazdır
-        res.status(500).json({ message: 'Son siparişi getirirken bir hata oluştu.', error: error.message });
+        console.error('Error fetching last order ID:', error);
+        res.status(500).json({ message: 'Son sipariş ID\'sini getirirken bir hata oluştu.', error: error.message });
     }
 });
-
 module.exports = router;
