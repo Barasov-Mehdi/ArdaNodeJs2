@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
-
+// routes/users.js
 
 router.get('/me', auth, async (req, res) => {
   try {
@@ -114,5 +114,7 @@ router.get('/current-location', auth, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+
 
 module.exports = router;

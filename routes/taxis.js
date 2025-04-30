@@ -3,8 +3,7 @@ const router = express.Router();
 const TaxiRequest = require('../models/taxiRequest');
 const Driver = require('../models/Driver'); // Sürücü modelini import edin, doğru path kullandığınızdan emin olun
 const User = require('../models/User'); // Sürücü modelini import edin, doğru path kullandığınızdan emin olun
-
-// Create a taxi request
+// routes/taxis.js 
 router.post('/request', async (req, res) => {
   try {
     const { currentAddress, destinationAddress, additionalInfo, additionalData, userId, coordinates, price } = req.body; // price ekledik
@@ -282,6 +281,21 @@ router.get('/my-requests/:userId', async (req, res) => {
   } catch (error) {
     console.error('Kullanıcı siparişleri alınırken hata:', error);
     res.status(500).json({ message: 'Kullanıcı siparişleri alınırken bir hata oluştu.' });
+  }
+});
+
+router.post('/addOrderToUser', async (req, res) => {
+  const { userId, requestId } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'Kullanıcı bulunamadı' });
+
+    user.orders.push({ orderId: requestId });
+    await user.save();
+    res.json({ message: 'Sipariş kullanıcıya eklendi' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Hata oluştu' });
   }
 });
 
