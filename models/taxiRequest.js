@@ -50,16 +50,6 @@ const taxiRequestSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  // coordinates: {
-  //   latitude: {
-  //     type: Number,
-  //     required: false
-  //   },
-  //   longitude: {
-  //     type: Number,
-  //     required: false
-  //   }
-  // },
   isTaken: {
     type: Boolean,
     default: false // Başlangıçta alınmamış olarak işaretlenecek.
