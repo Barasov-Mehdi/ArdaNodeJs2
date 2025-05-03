@@ -1,17 +1,20 @@
 const mongoose = require('mongoose');
 
 const taxiRequestSchema = new mongoose.Schema({
-  currentAddress: { // Yeni alan
-    type: String,
-    required: true
+  currentAddress: {
+    text: { type: String, required: true },
+    latitude: { type: Number, required: false },
+    longitude: { type: Number, required: false }
   },
   destinationAddress: {
-    type: String,
-    required: true
+    text: { type: String, required: true },
+    latitude: { type: Number, required: false },
+    longitude: { type: Number, required: false }
   },
-  additionalInfo: {
-    type: String,
-    required: false
+  destination2: {
+    text: { type: String, required: false },
+    latitude: { type: Number, required: false },
+    longitude: { type: Number, required: false }
   },
   additionalData: {
     type: Boolean,
@@ -47,16 +50,16 @@ const taxiRequestSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  coordinates: {
-    latitude: {
-      type: Number,
-      required: false
-    },
-    longitude: {
-      type: Number,
-      required: false
-    }
-  },
+  // coordinates: {
+  //   latitude: {
+  //     type: Number,
+  //     required: false
+  //   },
+  //   longitude: {
+  //     type: Number,
+  //     required: false
+  //   }
+  // },
   isTaken: {
     type: Boolean,
     default: false // Başlangıçta alınmamış olarak işaretlenecek.

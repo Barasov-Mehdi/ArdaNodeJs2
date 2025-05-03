@@ -4,36 +4,86 @@ const TaxiRequest = require('../models/taxiRequest');
 const Driver = require('../models/Driver'); // Sürücü modelini import edin, doğru path kullandığınızdan emin olun
 const User = require('../models/User'); // Sürücü modelini import edin, doğru path kullandığınızdan emin olun
 // routes/taxis.js 
+// router.post('/request', async (req, res) => {
+//   try {
+//     const { currentAddress, destinationAddress, additionalInfo, additionalData, userId, coordinates, price } = req.body; // price ekledik
+
+//     if (!currentAddress || !destinationAddress || !userId || price == null) { // price kontrolü ekledik
+//       return res.status(400).json({ message: 'Mevcut adres, hedef adres, kullanıcı ID veya fiyat eksik.' });
+//     }
+
+//     const user = await User.findById(userId);
+//     if (!user || !user.tel || !user.name) {
+//       return res.status(400).json({ message: 'Kullanıcı bulunamadı veya telefon numarası kaydedilmemiş.' });
+//     }
+
+//     const taxiRequest = new TaxiRequest({
+//       currentAddress,
+//       destinationAddress,
+//       additionalInfo,
+//       additionalData: !!additionalData,
+//       userId,
+//       coordinates,
+//       tel: user.tel,
+//       name: user.name,
+//       price // Toplam fiyatı açıktan kaydediyoruz
+//     });
+
+//     const savedRequest = await taxiRequest.save();
+//     res.status(201).json({ message: 'Taksi isteği başarıyla kaydedildi.', requestId: savedRequest._id });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Taksi isteği kaydedilirken bir hata oluştu.' });
+//   }
+// });
+
 router.post('/request', async (req, res) => {
   try {
-    const { currentAddress, destinationAddress, additionalInfo, additionalData, userId, coordinates, price } = req.body; // price ekledik
+    const {
+      currentAddress,
+      destinationAddress,
+      destination2, // Burada üçüncü adresi alıyoruz
+      additionalInfo,
+      additionalData,
+      userId,
+      price
+    } = req.body;
 
-    if (!currentAddress || !destinationAddress || !userId || price == null) { // price kontrolü ekledik
-      return res.status(400).json({ message: 'Mevcut adres, hedef adres, kullanıcı ID veya fiyat eksik.' });
+    // Gerekli alanlar kontrol
+    if (
+      !currentAddress || !currentAddress.text ||
+      !destinationAddress || !destinationAddress.text ||
+      !userId || price == null
+    ) {
+      return res.status(400).json({ message: 'Gerekli alanlar eksik.' });
     }
 
     const user = await User.findById(userId);
     if (!user || !user.tel || !user.name) {
-      return res.status(400).json({ message: 'Kullanıcı bulunamadı veya telefon numarası kaydedilmemiş.' });
+      return res.status(400).json({ message: 'Kullanıcı bulunamadı veya telefon kaydı yok.' });
     }
 
     const taxiRequest = new TaxiRequest({
       currentAddress,
       destinationAddress,
+      destination2, // burada üçüncü adresi de kaydediyoruz
       additionalInfo,
       additionalData: !!additionalData,
       userId,
-      coordinates,
       tel: user.tel,
       name: user.name,
-      price // Toplam fiyatı açıktan kaydediyoruz
+      price
     });
 
     const savedRequest = await taxiRequest.save();
-    res.status(201).json({ message: 'Taksi isteği başarıyla kaydedildi.', requestId: savedRequest._id });
+
+    res.status(201).json({
+      message: 'Taksi isteği başarıyla kaydedildi.',
+      requestId: savedRequest._id
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Taksi isteği kaydedilirken bir hata oluştu.' });
+    res.status(500).json({ message: 'Hata oluştu' });
   }
 });
 

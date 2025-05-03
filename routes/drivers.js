@@ -160,7 +160,6 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-
 router.get('/:id/onOrderStatus', async (req, res) => {
     try {
         const driver = await Drivers.findById(req.params.id);
