@@ -25,6 +25,8 @@ app.get('/order/taxi', (req, res) => {
 app.get('/add-coordinates', (req, res) => {
     res.render('addCoordinates'); // views/addCoordinates.ejs dosyasını göstermek için
 });
+
+
 app.use('/api/users', require('./routes/users'));
 app.use('/api/taxis', require('./routes/taxis'));
 app.use('/api/drivers', require('./routes/drivers'));
