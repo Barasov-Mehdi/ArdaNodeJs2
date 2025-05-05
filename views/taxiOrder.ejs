@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taksi Siparişi</title>
+    <title>Taksi Sifarişi</title>
     <style>
         /* Stil tanımlarınız buraya gelecek */
         body {
@@ -193,13 +193,13 @@
 </head>
 <body>
     <div class="container">
-        <h1 id="mainTitle">Taksi Siparişi Ver</h1>
+        <h1 id="mainTitle">Taksi Sifarişi Ver</h1>
 
         <!-- Sipariş Formu Bölümü -->
         <div id="orderFormSection">
             <form id="taxiOrderForm">
                 <div class="address-input-container">
-                    <label for="currentAddressText">Mevcut Adres:</label>
+                    <label for="currentAddressText">Müştəri ünvanı:</label>
                     <input type="text" id="currentAddressText" name="currentAddressText" required>
                     <input type="hidden" id="currentAddressLatitude" name="currentAddressLatitude">
                     <input type="hidden" id="currentAddressLongitude" name="currentAddressLongitude">
@@ -207,7 +207,7 @@
                 </div>
 
                 <div class="address-input-container">
-                    <label for="destinationAddressText">Varış Adresi:</label>
+                    <label for="destinationAddressText">Gediləcək ünvan:</label>
                     <input type="text" id="destinationAddressText" name="destinationAddressText" required>
                     <input type="hidden" id="destinationAddressLatitude" name="destinationAddressLatitude">
                     <input type="hidden" id="destinationAddressLongitude" name="destinationAddressLongitude">
@@ -215,7 +215,7 @@
                 </div>
 
                 <div class="address-input-container">
-                    <label for="destination2Text">İkinci Varış Adresi (Opsiyonel):</label>
+                    <label for="destination2Text">İkinci gediləcək ünvan (isəsən):</label>
                     <input type="text" id="destination2Text" name="destination2Text">
                     <input type="hidden" id="destination2Latitude" name="destination2Latitude">
                     <input type="hidden" id="destination2Longitude" name="destination2Longitude">
@@ -223,53 +223,52 @@
                 </div>
 
                  <div>
-                    <label for="price">Tahmini Fiyat:</label>
+                    <label for="price">Qiymət:</label>
                     <input type="number" id="price" name="price" step="0.01" required>
                 </div>
 
                 <!-- Telefon Numarası Alanı -->
                  <div>
-                    <label for="tel">Telefon Numarası:</label>
+                    <label for="tel">Telefon Nömrəsi:</label>
                     <input type="text" id="tel" name="tel" required> <!-- Telefon numarası alanı -->
                 </div>
 
                 <!-- Ek Bilgi Alanı -->
                  <div>
-                    <label for="additionalInfo">Ek Bilgi (Opsiyonel):</label>
+                    <label for="additionalInfo">Əlavə məlumat (isəsən):</label>
                     <textarea id="additionalInfo" name="additionalInfo"></textarea> <!-- Ek bilgi alanı -->
                 </div>
 
 
                 <!-- Kullanıcı ID'sini gizli bir alanda saklayabilirsiniz -->
                 <div>
-                    <label for="userId">Kullanıcı ID:</label>
+                    <label for="userId">İD Buna dəymə:</label>
                     <input type="text" id="userId" name="userId" value="680208c697715af83884bf47" required>
                 </div>
 
-                <button type="submit">Sipariş Ver</button>
+                <button type="submit">Sifariş Ver</button>
             </form>
             <div id="message"></div>
         </div>
 
         <!-- Sipariş Detayları Bölümü (Başlangıçta Gizli) -->
         <div id="orderDetailsSection" class="hidden">
-             <h2>Sipariş Detayları</h2>
             <div id="orderDetailsContent">
-                <p class="loading">Sipariş bilgileri yükleniyor...</p>
+                <p class="loading">Sifariş yüklənir...</p>
             </div>
 
             <div id="driverInfo" style="display: none;">
-                <h2>Şoför Bilgileri</h2>
+                <h2>Şofer Detalları</h2>
                 <div id="driverDetails">
                     <!-- Şoför bilgileri buraya yüklenecek -->
                 </div>
-                 <p id="driverStatus" class="not-assigned">Şoför atanmadı veya bilgiler bekleniyor...</p>
+                 <p id="driverStatus" class="not-assigned">Şofer tapilmadı və ya yüklənir...</p>
 
                  <!-- Onaylama Butonu -->
-                 <button id="confirmOrderButton" class="success hidden">Siparişi Onayla</button>
+                 <button id="confirmOrderButton" class="success hidden">Sifarişi Təsdiqlə</button>
             </div>
 
-             <button id="cancelOrderButton" class="error">Siparişi İptal Et</button>
+             <button id="cancelOrderButton" class="error">Sifarişi Ləvğ Et</button>
         </div>
 
     </div>
@@ -393,11 +392,11 @@
 
         // Sipariş detaylarını API'den çekme fonksiyonu
         async function fetchOrderDetails(id) {
-             orderDetailsContentDiv.innerHTML = '<p class="loading">Sipariş bilgileri yükleniyor...</p>';
+             orderDetailsContentDiv.innerHTML = '<p class="loading">Sifariş məlumatı yüklənir...</p>';
              driverInfoDiv.style.display = 'none';
               driverDetailsDiv.innerHTML = ''; // Şoför bilgilerini temizle
               driverStatusPara.style.display = 'block'; // Durumu göster
-              driverStatusPara.textContent = 'Şoför atanmadı veya bilgiler bekleniyor...';
+              driverStatusPara.textContent = 'Şofer tapılmadı vəya məlumatı gözlənir...';
               driverStatusPara.className = 'not-assigned';
               confirmOrderButton.classList.add('hidden'); // Her yeni çekimde butonu gizle
               confirmOrderButton.disabled = false; // Butonu etkinleştir
@@ -409,22 +408,21 @@
 
                 if (response.ok) {
                     orderDetailsContentDiv.innerHTML = `
-                        <div class="detail-item"><strong>Sipariş ID:</strong> ${order._id}</div>
-                        <div class="detail-item"><strong>Mevcut Adres:</strong> ${order.currentAddress.text || 'Belirtilmemiş'}</div>
+                        <div class="detail-item"><strong>Müştəri ünvanı:</strong> ${order.currentAddress.text || 'Təyin olunmayıb'}</div>
                         ${order.currentAddress && order.currentAddress.latitude && order.currentAddress.longitude ?
-                            `<div class="detail-item"><strong>Mevcut Adres Koordinat:</strong> ${order.currentAddress.latitude}, ${order.currentAddress.longitude}</div>` : ''}
-                        <div class="detail-item"><strong>Varış Adresi:</strong> ${order.destinationAddress.text || 'Belirtilmemiş'}</div>
+                            `<div class="detail-item"><strong>Koordinat:</strong> ${order.currentAddress.latitude}, ${order.currentAddress.longitude}</div>` : ''}
+                        <div class="detail-item"><strong>Gediləcək ünvan:</strong> ${order.destinationAddress.text || 'Təyin olunmayıb'}</div>
                          ${order.destinationAddress && order.destinationAddress.latitude && order.destinationAddress.longitude ?
-                            `<div class="detail-item"><strong>Varış Adresi Koordinat:</strong> ${order.destinationAddress.latitude}, ${order.destinationAddress.longitude}</div>` : ''}
-                        ${order.destination2 && order.destination2.text ? `<div class="detail-item"><strong>İkinci Varış Adresi:</strong> ${order.destination2.text}</div>` : ''}
+                            `<div class="detail-item"><strong>Koordinat:</strong> ${order.destinationAddress.latitude}, ${order.destinationAddress.longitude}</div>` : ''}
+                        ${order.destination2 && order.destination2.text ? `<div class="detail-item"><strong>İkinci ünvan:</strong> ${order.destination2.text}</div>` : ''}
                          ${order.destination2 && order.destination2.latitude && order.destination2.longitude ?
-                            `<div class="detail-item"><strong>İkinci Varış Adresi Koordinat:</strong> ${order.destination2.latitude}, ${order.destination2.longitude}</div>` : ''}
-                        <div class="detail-item"><strong>Tahmini Fiyat:</strong> ${order.price ? order.price.toFixed(2) + ' TL' : 'Belirtilmemiş'}</div>
-                         <div class="detail-item"><strong>Durum:</strong> <span class="${order.isConfirmed ? 'confirmed' : 'pending'}">${order.isConfirmed ? 'Onaylandı' : 'Beklemede'}</span></div>
-                         <div class="detail-item"><strong>Sipariş Zamanı:</strong> ${new Date(order.date).toLocaleString()}</div>
-                         ${order.time ? `<div class="detail-item"><strong>Tahmini Varış Süresi:</strong> ${order.time}</span></div>` : ''}
-                         <div class="detail-item"><strong>Telefon:</strong> ${order.tel || 'Belirtilmemiş'}</div> <!-- Telefon bilgisini göster -->
-                         ${order.additionalInfo ? `<div class="detail-item"><strong>Ek Bilgi:</strong> ${order.additionalInfo}</div>` : ''} <!-- Ek bilgiyi göster -->
+                         `<div class="detail-item"><strong>Koordinat:</strong> ${order.destination2.latitude}, ${order.destination2.longitude}</div>` : ''}
+                        <div class="detail-item"><strong>Qiymət:</strong> ${order.price ? order.price.toFixed(2) + ' TL' : 'Təyin olunmayıb'}</div>
+                         <div class="detail-item"><strong>Təsdiq vəziyyəti:</strong> <span class="${order.isConfirmed ? 'confirmed' : 'pending'}">${order.isConfirmed ? 'Təsdiqləmdi' : 'Gözləmədə'}</span></div>
+                         <div class="detail-item"><strong>Sifariş Tarixi:</strong> ${new Date(order.date).toLocaleString()}</div>
+                         ${order.time ? `<div class="detail-item"><strong>Təxmini çatma müddəti:</strong> ${order.time}</span></div>` : ''}
+                         <div class="detail-item"><strong>Telefon:</strong> ${order.tel || 'Təyin olunmayıb'}</div> <!-- Telefon bilgisini göster -->
+                         ${order.additionalInfo ? `<div class="detail-item"><strong>Əlavə məlumat:</strong> ${order.additionalInfo}</div>` : ''} <!-- Ek bilgiyi göster -->
                     `;
 
                     // Şoför bilgileri gelmişse göster
