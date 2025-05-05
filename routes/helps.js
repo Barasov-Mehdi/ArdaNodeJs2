@@ -26,4 +26,19 @@ router.post('/', async (req, res) => {  // Change this line
         return res.status(500).json({ msg: "Server error", error: err.message });
     }
 });
+
+router.get('/', async (req, res) => { // Bu route /api/help'e GET isteği geldiğinde çalışacak
+    try {
+        // Veritabanındaki tüm Help belgelerini bul
+        const helpRequests = await Helps.find().sort({ _id: -1 }); // En son eklenenleri üste almak için
+
+        // helpMessages.ejs view dosyasını render et ve verileri gönder
+        res.render('helpMessages', { helpRequests: helpRequests });
+
+    } catch (err) {
+        console.error(err.message);
+        // Hata durumunda bir hata sayfası veya mesajı render et
+        res.status(500).render('error', { message: 'Yardım talepleri alınırken bir hata oluştu.' });
+    }
+});
 module.exports = router;

@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taksi Siparişi</title>
     <style>
+        /* Stil tanımlarınız buraya gelecek */
         body {
             font-family: sans-serif;
             line-height: 1.6;
             margin: 20px;
             background-color: #f4f4f4;
+            color: #333;
         }
         .container {
             max-width: 600px;
@@ -21,59 +23,29 @@
         }
         h1, h2 {
             text-align: center;
-            color: #333;
+            color: #555;
+        }
+        form div {
+            margin-bottom: 15px;
         }
         label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
         }
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
+        input[type="text"],
+        input[type="number"],
+        textarea { /* textarea için stil eklendi */
+            width: calc(100% - 22px); /* Padding ve border için ayarlama */
+            padding: 10px;
+            border: 1px solid #ccc;
             border-radius: 4px;
-            box-sizing: border-box;
+            box-sizing: border-box; /* Padding ve border genişliği etkilemez */
         }
-         /* Arama kutuları için özel stil */
-         .address-input-container {
-             position: relative; /* Sonuç listesini konumlandırmak için */
-             margin-bottom: 15px;
-         }
-         .address-input-container input[type="text"] {
-             margin-bottom: 0; /* Input ile liste arasına boşluk bırakma */
-         }
-         .address-search-results {
-             position: absolute;
-             z-index: 100; /* Diğer elementlerin üstünde görünmesi için */
-             top: 100%; /* Input'un hemen altında başlaması için */
-             left: 0;
-             right: 0;
-             background-color: #fff;
-             border: 1px solid #ddd;
-             border-top: none;
-             max-height: 150px; /* Maksimum yükseklik */
-             overflow-y: auto; /* Kaydırma çubuğu ekle */
-             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-             list-style: none;
-             padding: 0;
-             margin: 0;
-             display: none; /* Başlangıçta gizli */
-         }
-         .address-search-results li {
-             padding: 10px;
-             cursor: pointer;
-             border-bottom: 1px solid #eee;
-         }
-         .address-search-results li:last-child {
-             border-bottom: none;
-         }
-         .address-search-results li:hover {
-             background-color: #f0f0f0;
-         }
-
-
+         textarea {
+            resize: vertical; /* Sadece dikey yeniden boyutlandırmaya izin ver */
+            min-height: 80px; /* Minimum yükseklik */
+        }
         button {
             display: block;
             width: 100%;
@@ -84,84 +56,139 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
-            margin-top: 10px;
+            transition: background-color 0.3s ease;
         }
         button:hover {
             background-color: #4cae4c;
         }
-         button.error {
-            background-color: #d9534f;
+        button.error {
+             background-color: #d9534f;
         }
          button.error:hover {
-            background-color: #c9302c;
-        }
-         button.info {
-            background-color: #5bc0de;
-        }
-         button.info:hover {
-            background-color: #31b0d5;
-        }
-         button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
+             background-color: #c9302c;
          }
+          button.success {
+             background-color: #5cb85c;
+        }
+         button.success:hover {
+             background-color: #4cae4c;
+         }
+          button.info {
+             background-color: #5bc0de;
+         }
+          button.info:hover {
+             background-color: #31b0d5;
+         }
+
+
+        .hidden {
+            display: none;
+        }
         #message {
             margin-top: 15px;
             padding: 10px;
             border-radius: 4px;
-            display: none;
+            text-align: center;
+            display: none; /* Başlangıçta gizli */
         }
-        .success {
+        #message.success {
             background-color: #dff0d8;
             color: #3c763d;
             border: 1px solid #d6e9c6;
         }
-        .error {
+        #message.error {
             background-color: #f2dede;
             color: #a94442;
             border: 1px solid #ebccd1;
         }
-         .detail-item {
-            margin-bottom: 15px;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
+        .detail-item {
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #eee;
+        }
+        .detail-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
         }
         .detail-item strong {
             display: inline-block;
-            width: 150px;
-            color: #555;
+            width: 150px; /* Label genişliği */
         }
-        #driverInfo {
-            margin-top: 20px;
-            border-top: 1px solid #ddd;
-            padding-top: 15px;
+
+         .address-input-container {
+            position: relative;
+            margin-bottom: 15px;
         }
-        #driverInfo h2 {
-            text-align: left;
-            margin-bottom: 10px;
+
+        .address-search-results {
+            position: absolute;
+            top: 100%; /* Input'un hemen altına */
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-top: none;
+            max-height: 150px;
+            overflow-y: auto;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            z-index: 10; /* Diğer elementlerin önüne gelsin */
+            display: none; /* Başlangıçta gizli */
         }
-         .loading {
+
+        .address-search-results li {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .address-search-results li:hover {
+            background-color: #f0f0f0;
+        }
+
+        .loading {
             text-align: center;
             font-style: italic;
             color: #777;
-         }
+        }
+
+        .confirmed {
+            color: green;
+            font-weight: bold;
+        }
+
+        .pending {
+             color: orange;
+             font-weight: bold;
+        }
+
          .not-assigned {
-            text-align: center;
-            color: #f0ad4e;
-            font-weight: bold;
+             color: gray;
+             font-style: italic;
          }
-         .confirmed {
-            color: #5cb85c;
-            font-weight: bold;
+
+         #driverInfo {
+             margin-top: 20px;
+             padding-top: 15px;
+             border-top: 1px solid #eee;
          }
-          .pending {
-            color: #f0ad4e;
-            font-weight: bold;
+         #driverDetails {
+             margin-bottom: 15px;
          }
-         /* Bölümleri gizlemek/göstermek için */
-         .hidden {
-             display: none;
+
+          #confirmOrderButton {
+            margin-top: 15px;
+            background-color: #5cb85c; /* Yeşil */
          }
+
+          #cancelOrderButton {
+            margin-top: 15px;
+            background-color: #d9534f; /* Kırmızı */
+         }
+
+
     </style>
 </head>
 <body>
@@ -197,8 +224,21 @@
 
                  <div>
                     <label for="price">Tahmini Fiyat:</label>
-                    <input type="number" id="price" name="price" required>
+                    <input type="number" id="price" name="price" step="0.01" required>
                 </div>
+
+                <!-- Telefon Numarası Alanı -->
+                 <div>
+                    <label for="tel">Telefon Numarası:</label>
+                    <input type="text" id="tel" name="tel" required> <!-- Telefon numarası alanı -->
+                </div>
+
+                <!-- Ek Bilgi Alanı -->
+                 <div>
+                    <label for="additionalInfo">Ek Bilgi (Opsiyonel):</label>
+                    <textarea id="additionalInfo" name="additionalInfo"></textarea> <!-- Ek bilgi alanı -->
+                </div>
+
 
                 <!-- Kullanıcı ID'sini gizli bir alanda saklayabilirsiniz -->
                 <div>
@@ -262,6 +302,10 @@
         const destination2LatitudeInput = document.getElementById('destination2Latitude');
         const destination2LongitudeInput = document.getElementById('destination2Longitude');
         const destination2ResultsList = document.getElementById('destination2Results');
+
+        // Yeni Eklenen Alanlar
+        const telInput = document.getElementById('tel');
+        const additionalInfoTextarea = document.getElementById('additionalInfo');
 
 
         let currentRequestId = null; // Aktif siparişin ID'sini saklamak için
@@ -379,6 +423,8 @@
                          <div class="detail-item"><strong>Durum:</strong> <span class="${order.isConfirmed ? 'confirmed' : 'pending'}">${order.isConfirmed ? 'Onaylandı' : 'Beklemede'}</span></div>
                          <div class="detail-item"><strong>Sipariş Zamanı:</strong> ${new Date(order.date).toLocaleString()}</div>
                          ${order.time ? `<div class="detail-item"><strong>Tahmini Varış Süresi:</strong> ${order.time}</span></div>` : ''}
+                         <div class="detail-item"><strong>Telefon:</strong> ${order.tel || 'Belirtilmemiş'}</div> <!-- Telefon bilgisini göster -->
+                         ${order.additionalInfo ? `<div class="detail-item"><strong>Ek Bilgi:</strong> ${order.additionalInfo}</div>` : ''} <!-- Ek bilgiyi göster -->
                     `;
 
                     // Şoför bilgileri gelmişse göster
@@ -432,10 +478,12 @@
 
             // Alanların dolu olduğundan emin olun (özellikle gizli koordinat alanları)
             if (!currentAddressInput.value || !currentAddressLatitudeInput.value || !currentAddressLongitudeInput.value ||
-                !destinationAddressInput.value || !destinationAddressLatitudeInput.value || !destinationAddressLongitudeInput.value) {
+                !destinationAddressInput.value || !destinationAddressLatitudeInput.value || !destinationAddressLongitudeInput.value ||
+                !telInput.value // Telefon numarası kontrolü eklendi
+                ) {
                  messageDiv.style.display = 'block';
                  messageDiv.className = 'error';
-                 messageDiv.textContent = 'Lütfen mevcut ve varış adreslerini listeden seçerek girin.';
+                 messageDiv.textContent = 'Lütfen mevcut ve varış adreslerini listeden seçerek girin ve telefon numaranızı ekleyin.';
                  return; // İşlemi durdur
             }
 
@@ -453,7 +501,9 @@
                 },
                 destination2: null, // Başlangıçta null olarak ayarla
                  price: parseFloat(document.getElementById('price').value),
-                userId: document.getElementById('userId').value // userId inputundan al
+                userId: document.getElementById('userId').value, // userId inputundan al
+                tel: telInput.value, // Telefon numarasını ekle
+                additionalInfo: additionalInfoTextarea.value // Ek bilgiyi ekle
             };
 
             // Eğer ikinci varış adresi girilmişse
@@ -638,8 +688,6 @@
                  }, 5000); // 5 saniye
             }
         });
-
-
     </script>
 </body>
 </html>

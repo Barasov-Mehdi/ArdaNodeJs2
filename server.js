@@ -17,8 +17,9 @@ app.get('/register/user', (req, res) => {
     res.render('userRegister');
 });
 app.get('/register/driver', (req, res) => {
-    res.render('add-coordinates');
+    res.render('driverRegister');
 });
+
 app.get('/order/taxi', (req, res) => {
     res.render('taxiOrder'); 
 });

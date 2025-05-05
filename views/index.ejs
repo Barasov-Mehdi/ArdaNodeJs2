@@ -13,12 +13,15 @@
             margin: 0;
             padding: 0;
             color: #333;
+            line-height: 1.6;
+            /* Okunabilirliği artırır */
         }
 
         header {
             background: #35424a;
             color: #ffffff;
-            padding: 20px;
+            padding: 20px 0;
+            /* Üst ve alttan boşluk, yanlardan boşluk yok */
             text-align: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
@@ -30,8 +33,10 @@
         }
 
         nav ul li {
-            display: inline;
-            margin: 0 15px;
+            display: inline-block;
+            /* Inline-block ile daha esnek yatay sıralama */
+            margin: 0 10px;
+            /* Yatay boşlukları azaltıyoruz */
         }
 
         nav ul li a {
@@ -40,40 +45,76 @@
             padding: 8px 15px;
             border-radius: 5px;
             transition: background 0.3s;
+            display: block;
+            /* Tüm link alanını tıklanabilir yapar */
         }
 
         nav ul li a:hover {
             background: #e8491d;
         }
 
-        .container1 {
-            width: 500px;
-            margin: 10px auto;
-            padding: 20px;
+        .flex-container {
+            display: flex;
+            flex-wrap: wrap;
+            /* Küçük ekranlarda alt alta geçmesini sağlar */
+            justify-content: center;
+            /* Öğeleri merkezler */
+            gap: 20px;
+            /* Flex öğeleri arasında boşluk */
+            margin: 20px auto;
+            /* Üst ve alttan boşluk, yanlardan otomatik (merkezleme) */
+            max-width: 1200px;
+            /* Maksimum genişlik belirleyerek çok geniş ekranlarda dağılmasını engeller */
+            padding: 0 20px;
+            /* Yanlardan padding ekleyerek içeriğin kenarlara yapışmasını engeller */
+        }
+
+        .container1,
+        .container2,
+        .update-limit {
             background: #ffffff;
             border-radius: 8px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-sizing: border-box;
+            /* Padding'in genişliğe dahil olmasını sağlar */
+            flex: 1 1 300px;
+            /* Esnek büyüme ve küçülme, minimum genişlik 300px */
+            max-width: 100%;
+            /* Kendi içinde maksimum genişlik */
+        }
+
+        .container1 {
+            flex-basis: 500px;
+            /* Tercih edilen başlangıç genişliği */
+            max-width: 100%;
+            /* Küçük ekranlarda 100% genişlik */
         }
 
         .container2 {
-            width: 300px;
-            margin: 10px auto;
-            padding: 20px;
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            flex-basis: 300px;
+            /* Tercih edilen başlangıç genişliği */
+            max-width: 100%;
+            /* Küçük ekranlarda 100% genişlik */
         }
 
-        .flex-container {
-            display: flex;
-            justify-content: space-around;
-            /* İki div arasında eşit boşluk */
-            margin: 50px auto;
-            /* Merkeze yerleştirmek için */
+        .update-limit {
+            flex-basis: 300px;
+            /* Tercih edilen başlangıç genişliği */
+            max-width: 100%;
+            /* Küçük ekranlarda 100% genişlik */
+            margin-top: 0;
+            /* Flex container içindeyken üst boşluğa gerek yok */
         }
 
-        h2 {
+
+        h2,
+        h3 {
             color: #35424a;
+            text-align: center;
+            /* Başlıkları merkezler */
+            margin-top: 0;
+            /* Üst boşluğu kaldırır */
         }
 
         .order-item {
@@ -83,6 +124,8 @@
             border-radius: 5px;
             background-color: #f9f9f9;
             transition: background 0.3s;
+            word-wrap: break-word;
+            /* Uzun kelimelerin satır atlamasını sağlar */
         }
 
         .order-item:hover {
@@ -104,23 +147,29 @@
 
         #driverList {
             height: 250px;
-            overflow-y: scroll;
+            overflow-y: auto;
+            /* Scroll yerine auto kullanmak daha iyidir */
             border: 1px solid #e8491d;
             padding: 10px;
-
-        }
-
-        .update-limit {
-            margin-top: 10px;
-            padding: 15px;
-            border: 1px solid #dddddd;
-            background: #f9f9f9;
-            border-radius: 5px;
+            background-color: #ffffff;
+            /* Arka plan rengi eklenmiş */
         }
 
         .update-limit label {
             display: block;
             margin: 10px 0 5px;
+        }
+
+        .update-limit input[type="number"],
+        .update-limit select {
+            width: 100%;
+            /* Genişliği %100 yapar */
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            /* Padding'in genişliğe dahil olmasını sağlar */
         }
 
         #updateLimitButton {
@@ -131,6 +180,8 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background 0.3s;
+            width: 100%;
+            /* Genişliği %100 yapar */
         }
 
         #updateLimitButton:hover {
@@ -142,9 +193,12 @@
             padding: 20px;
             background: #35424a;
             color: #ffffff;
-            position: relative;
-            bottom: 0;
+            /* position: relative; /* Fixed yerine relative kullanmak daha iyi olabilir */
+            */
+            /* bottom: 0; */
             width: 100%;
+            margin-top: 30px;
+            /* Flex container ile footer arasına boşluk */
         }
 
         footer p {
@@ -152,12 +206,91 @@
         }
 
         .driver-item {
-            width: 250px;
             display: flex;
             justify-content: space-between;
             margin: 10px 0;
+            padding-bottom: 5px;
+            /* Alt çizgi için boşluk */
+            border-bottom: 1px dashed #eee;
+            /* Ayırıcı çizgi */
+        }
+
+        .driver-item:last-child {
+            border-bottom: none;
+            /* Son öğede çizgi olmasın */
+        }
+
+        /* Medya Sorguları */
+        @media (max-width: 768px) {
+            nav ul li {
+                display: block;
+                /* Küçük ekranlarda menü öğeleri alt alta */
+                margin: 10px 0;
+                /* Dikey boşluk ekle */
+            }
+
+            nav ul {
+                padding: 10px 0;
+                /* Menüye üst/alt padding ekle */
+            }
+
+            .flex-container {
+                flex-direction: column;
+                /* Öğeleri dikey olarak sırala */
+                align-items: center;
+                /* Öğeleri merkezle */
+                padding: 0 10px;
+                /* Yan padding'i azalt */
+            }
+
+            .container1,
+            .container2,
+            .update-limit {
+                flex-basis: auto;
+                /* Otomatik boyutlandırma */
+                width: 100%;
+                /* Tam genişlik kullan */
+                margin-bottom: 20px;
+                /* Alt boşluk ekle */
+            }
+
+            .update-limit {
+                margin-top: 0;
+                /* Flex container içindeyken üst boşluğa gerek yok */
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.8em;
+                /* Başlık boyutunu küçült */
+            }
+
+            nav ul li a {
+                padding: 8px 10px;
+                /* Menü link padding'ini küçült */
+            }
+
+            .container1,
+            .container2,
+            .update-limit {
+                padding: 15px;
+                /* Container padding'ini küçült */
+            }
+
+            .order-item,
+            #driverList {
+                padding: 10px;
+                /* Liste öğelerinin padding'ini küçült */
+            }
+
+            footer {
+                padding: 15px;
+                /* Footer padding'ini küçült */
+            }
         }
     </style>
+
 </head>
 
 <body>
@@ -168,6 +301,7 @@
                 <li><a href="/register/driver">Sürücü Qeydiyyat</a></li>
                 <li><a href="/order/taxi">Taksi Sifarişi Ver</a></li>
                 <li><a href="/add-coordinates">Koordinat Əlavə Et</a></li> <!-- Buraya eklendi -->
+                <li><a href="/api/help">Müştəri Mesajları</a></li> <!-- Buraya eklendi -->
             </ul>
         </nav>
     </header>
@@ -198,9 +332,8 @@
     </div>
 
 
-
     <footer>
-        <p>© Arda Taksi - Bütün hakları saklıdır.</p>
+        <p>© Arda Taksi</p>
     </footer>
 
     <script>
@@ -219,8 +352,9 @@
                         const orderItem = document.createElement('div');
                         orderItem.className = 'order-item';
                         orderItem.innerHTML = `
-                            <p><strong>Müştəri Adresi:</strong> ${order.currentAddress}</p>
-                            <p><strong>Gediləcək Adres:</strong> ${order.destinationAddress}</p>
+                            <p><strong>Müştəri Adresi:</strong> ${order.currentAddress.text}</p>
+                            <p><strong>Gediləcək Adres:</strong> ${order.destinationAddress.text}</p>
+                            <p><strong>Gediləcək Adres:</strong> ${order.destination2.text}</p>
                             <p><strong>Əlavə məlumat:</strong> ${order.additionalInfo || 'Yok'}</p>
                             <p><strong>Qiymət:</strong> ${order.price.toFixed(2)} ₼</p>
                             <p><strong>Qəbul :</strong> ${order.isConfirmed ? 'Edildi' : 'Edilməmiş'}</p>

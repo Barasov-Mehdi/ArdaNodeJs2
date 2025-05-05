@@ -69,6 +69,10 @@ const taxiRequestSchema = new mongoose.Schema({
   time: {
     type: String,
     required: false // Telefon numarasının gerekli olduğunu belirtiyoruz
+  },
+  additionalInfo: {
+    type: String,
+    required: false
   }
 });
 
