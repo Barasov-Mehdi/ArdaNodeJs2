@@ -394,7 +394,7 @@
                     driverItem.className = 'driver-item';
                     driverItem.innerHTML = `
                 <span><strong>${driver.firstName} ${driver.lastName}</strong></span>
-                <span>Balans: <span class="limit">${driver.limit != null && driver.limit !== '' ? driver.limit.toFixed(1) : '0.0'} ₼</span></span>
+                <span>Balans: <span class="limit">${driver.limit != null && driver.limit !== '' ? driver.limit.toFixed(2) : '0.0'} ₼</span></span>
             `;
                     driverList.appendChild(driverItem);
 
