@@ -302,15 +302,16 @@
                 <li><a href="/order/taxi">Taksi Sifarişi Ver</a></li>
                 <li><a href="/add-coordinates">Koordinat Əlavə Et</a></li> <!-- Buraya eklendi -->
                 <li><a href="/api/help">Müştəri Mesajları</a></li> <!-- Buraya eklendi -->
+                <li><a href="/admin/delete-drivers">Şoferi sil</a></li> <!-- Buraya eklendi -->
             </ul>
         </nav>
     </header>
 
     <div class="flex-container">
-        <div class="container1">
+        <!-- <div class="container1">
             <h2>Ofis Sifarişləri</h2>
             <div id="orderList"></div>
-        </div>
+        </div> -->
 
         <div class="container2">
             <h2>Sürücülərin Balansı</h2>
@@ -337,44 +338,44 @@
     </footer>
 
     <script>
-        async function fetchUserOrders() {
-            const userId = '680208c697715af83884bf47';
-            const response = await fetch(`/api/taxis/userRequests/${userId}`);
+        // async function fetchUserOrders() {
+        //     const userId = '680208c697715af83884bf47';
+        //     const response = await fetch(`/api/taxis/userRequests/${userId}`);
 
-            if (response.ok) {
-                const orders = await response.json();
-                const orderList = document.getElementById('orderList');
+        //     if (response.ok) {
+        //         const orders = await response.json();
+        //         const orderList = document.getElementById('orderList');
 
-                if (orders.length === 0) {
-                    orderList.innerHTML = '<p>Bu kullanıcıya ait sipariş bulunamadı.</p>';
-                } else {
-                    orders.forEach(order => {
-                        const orderItem = document.createElement('div');
-                        orderItem.className = 'order-item';
-                        orderItem.innerHTML = `
-                            <p><strong>Müştəri Adresi:</strong> ${order.currentAddress.text}</p>
-                            <p><strong>Gediləcək Adres:</strong> ${order.destinationAddress.text}</p>
-                            <p><strong>Gediləcək Adres:</strong> ${order.destination2.text}</p>
-                            <p><strong>Əlavə məlumat:</strong> ${order.additionalInfo || 'Yok'}</p>
-                            <p><strong>Qiymət:</strong> ${order.price.toFixed(2)} ₼</p>
-                            <p><strong>Qəbul :</strong> ${order.isConfirmed ? 'Edildi' : 'Edilməmiş'}</p>
-                            <br>
-                            ${order.driverDetails ? `
-                                <p><strong>Təsdiqləyən Sürücü:</strong> ${order.driverDetails.firstName}</p>
-                                <p><strong>Maşın nömrəsi:</strong> ${order.driverDetails.carPlate}</p>
-                                <p><strong>Şofer tel no:</strong> ${order.driverDetails.phone}</p>
-                            ` : ''}
-                        `;
-                        orderList.appendChild(orderItem);
-                    });
-                }
-            } else {
-                const errorMessage = await response.json();
-                document.getElementById('orderList').innerHTML = `<p>${errorMessage.message}</p>`;
-            }
-        }
+        //         if (orders.length === 0) {
+        //             orderList.innerHTML = '<p>Bu kullanıcıya ait sipariş bulunamadı.</p>';
+        //         } else {
+        //             orders.forEach(order => {
+        //                 const orderItem = document.createElement('div');
+        //                 orderItem.className = 'order-item';
+        //                 orderItem.innerHTML = `
+        //                     <p><strong>Müştəri Adresi:</strong> ${order.currentAddress.text}</p>
+        //                     <p><strong>Gediləcək Adres:</strong> ${order.destinationAddress.text}</p>
+        //                     <p><strong>Gediləcək Adres:</strong> ${order.destination2.text}</p>
+        //                     <p><strong>Əlavə məlumat:</strong> ${order.additionalInfo || 'Yok'}</p>
+        //                     <p><strong>Qiymət:</strong> ${order.price.toFixed(2)} ₼</p>
+        //                     <p><strong>Qəbul :</strong> ${order.isConfirmed ? 'Edildi' : 'Edilməmiş'}</p>
+        //                     <br>
+        //                     ${order.driverDetails ? `
+        //                         <p><strong>Təsdiqləyən Sürücü:</strong> ${order.driverDetails.firstName}</p>
+        //                         <p><strong>Maşın nömrəsi:</strong> ${order.driverDetails.carPlate}</p>
+        //                         <p><strong>Şofer tel no:</strong> ${order.driverDetails.phone}</p>
+        //                     ` : ''}
+        //                 `;
+        //                 orderList.appendChild(orderItem);
+        //             });
+        //         }
+        //     } else {
+        //         const errorMessage = await response.json();
+        //         document.getElementById('orderList').innerHTML = `<p>${errorMessage.message}</p>`;
+        //     }
+        // }
 
-        document.addEventListener('DOMContentLoaded', fetchUserOrders);
+        // document.addEventListener('DOMContentLoaded', fetchUserOrders);
 
         let driversData = [];
 
@@ -393,7 +394,7 @@
                     driverItem.className = 'driver-item';
                     driverItem.innerHTML = `
                 <span><strong>${driver.firstName} ${driver.lastName}</strong></span>
-                <span>Balans: <span class="limit">${driver.limit !== null ? driver.limit : '0'} ₼</span></span>
+                <span>Balans: <span class="limit">${driver.limit != null && driver.limit !== '' ? driver.limit.toFixed(1) : '0.0'} ₼</span></span>
             `;
                     driverList.appendChild(driverItem);
 

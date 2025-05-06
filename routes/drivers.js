@@ -102,34 +102,6 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// router.put('/:id', async (req, res) => {
-//     const { atWork, onOrder, lastOrderId } = req.body;
-
-//     try {
-//         const driver = await Drivers.findById(req.params.id);
-//         if (!driver) {
-//             return res.status(404).json({ msg: 'Driver not found' });
-//         }
-
-//         // Gerekli alanların güncellenmesi
-//         if (typeof atWork !== 'undefined') {
-//             driver.atWork = atWork;
-//         }
-//         if (typeof onOrder !== 'undefined') {
-//             driver.onOrder = onOrder;
-//         }
-//         if (lastOrderId) {
-//             driver.lastOrderId = lastOrderId; // Update lastOrderId
-//         }
-
-//         await driver.save();
-//         res.json(driver);
-//     } catch (error) {
-//         console.error("Error updating driver:", error);
-//         res.status(500).json({ msg: 'Server error', error: error.message });
-//     }
-// });
-
 router.put('/:id', async (req, res) => {
     try {
         const driver = await Drivers.findById(req.params.id);
@@ -425,8 +397,8 @@ router.get('/:driverId/last-order-id', async (req, res) => {
             status: { $ne: 'canceled' },
             price: { $gt: 0 }  // Fiyatı 0'dan büyük olan siparişler
         })
-        .sort({ _id: -1 }) // En son siparişi almak için _id'ye göre azalan sırada
-        .select('_id'); // Sadece ID'yi seçelim
+            .sort({ _id: -1 }) // En son siparişi almak için _id'ye göre azalan sırada
+            .select('_id'); // Sadece ID'yi seçelim
 
         console.log(`Fetched Last Order ID for Driver ID ${req.params.driverId}:`, lastOrder);
 
@@ -440,4 +412,21 @@ router.get('/:driverId/last-order-id', async (req, res) => {
         res.status(500).json({ message: 'Son sipariş ID\'sini getirirken bir hata oluştu.', error: error.message });
     }
 });
+
+// Add this route in your routes/drivers.js file
+
+// routes/drivers.js dosyanıza ekleyin
+router.delete('/:id', async (req, res) => {
+    try {
+        const driver = await Drivers.findByIdAndDelete(req.params.id);
+        if (!driver) {
+            return res.status(404).json({ msg: 'Driver not found' });
+        }
+        res.json({ msg: 'Driver removed' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;

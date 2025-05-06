@@ -27,6 +27,10 @@ app.get('/add-coordinates', (req, res) => {
     res.render('addCoordinates'); // views/addCoordinates.ejs dosyasını göstermek için
 });
 
+// In your app.js or admin routes file
+app.get('/admin/delete-drivers', (req, res) => {
+    res.render('deleteDrivers'); // Assuming deleteDrivers.ejs is in your views folder
+});
 
 app.use('/api/users', require('./routes/users'));
 app.use('/api/taxis', require('./routes/taxis'));

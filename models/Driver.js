@@ -57,18 +57,18 @@ const DriversSchema = new mongoose.Schema({
     dailyEarnings: {
         type: Number,
         default: 0
-    }, // New field for daily earnings
+    }, 
     atWork: {
         type: Boolean,
-        default: false, // Default value is false
+        default: false, 
     },
     onOrder: {
         type: Boolean,
-        default: false, // Default value is false
+        default: false, 
     },
     lastOrderIds: {
-        type: [mongoose.Schema.Types.ObjectId], // Array of order IDs
-        default: [], // Initialize as an empty array
+        type: [mongoose.Schema.Types.ObjectId], 
+        default: [], 
     },
 
 });
