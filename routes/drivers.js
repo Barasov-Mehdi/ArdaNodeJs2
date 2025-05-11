@@ -280,7 +280,7 @@ router.get('/:id/limit', async (req, res) => {
 router.get('/get-drivers', async (req, res) => {
     try {
         // firstName, lastName, limit ve _id alanlarını alıyoruz (_id varsayılan olarak gelir)
-        const drivers = await Drivers.find().select('firstName lastName limit');
+        const drivers = await Drivers.find().select('firstName lastName limit atWork');
         res.json(drivers);
     } catch (error) {
         console.error('Hata:', error);
@@ -412,8 +412,6 @@ router.get('/:driverId/last-order-id', async (req, res) => {
         res.status(500).json({ message: 'Son sipariş ID\'sini getirirken bir hata oluştu.', error: error.message });
     }
 });
-
-// Add this route in your routes/drivers.js file
 
 // routes/drivers.js dosyanıza ekleyin
 router.delete('/:id', async (req, res) => {

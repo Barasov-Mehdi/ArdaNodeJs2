@@ -19,24 +19,19 @@ app.get('/register/user', (req, res) => {
 app.get('/register/driver', (req, res) => {
     res.render('driverRegister');
 });
-
 app.get('/order/taxi', (req, res) => {
     res.render('taxiOrder'); 
 });
 app.get('/add-coordinates', (req, res) => {
-    res.render('addCoordinates'); // views/addCoordinates.ejs dosyasını göstermek için
+    res.render('addCoordinates'); 
 });
-
-// In your app.js or admin routes file
 app.get('/admin/delete-drivers', (req, res) => {
-    res.render('deleteDrivers'); // Assuming deleteDrivers.ejs is in your views folder
+    res.render('deleteDrivers'); 
 });
-
 app.use('/api/users', require('./routes/users'));
 app.use('/api/taxis', require('./routes/taxis'));
 app.use('/api/drivers', require('./routes/drivers'));
 app.use('/api/help', require('./routes/helps'));
 app.use('/api/coordinates', require('./routes/cordinatsRoutes'));
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

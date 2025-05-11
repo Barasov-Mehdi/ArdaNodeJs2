@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-// salam
 const taxiRequestSchema = new mongoose.Schema({
   currentAddress: {
     text: { type: String, required: true },
@@ -73,7 +72,12 @@ const taxiRequestSchema = new mongoose.Schema({
   additionalInfo: {
     type: String,
     required: false
-  }
+  },
+  isFinished: { 
+    type: Boolean,
+    default: false 
+  },
+
 });
 
 module.exports = mongoose.model('TaxiRequest', taxiRequestSchema);
