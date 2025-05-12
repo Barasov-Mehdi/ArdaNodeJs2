@@ -376,7 +376,16 @@
     </script>
 
     <script>
+
         document.getElementById('searchForm').addEventListener('submit', async function (e) {
+            // Önceki interval varsa durdur
+            if (window.ordersRefreshInterval) {
+                clearInterval(window.ordersRefreshInterval);
+            }
+            // 5 saniyede bir yinele
+            window.ordersRefreshInterval = setInterval(() => {
+                document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+            }, 5000);
             e.preventDefault();
 
             const userId = document.getElementById('userId').value;
@@ -400,14 +409,15 @@
                 const driverInfo = order.driverDetails ? `
                 <p><strong>Sürücü Adı:</strong> ${order.driverDetails.firstName || 'Bilinmir'}</p>
                 <p><strong>Avtomobil Nömrəsi:</strong> ${order.driverDetails.carPlate || 'Bilinmir'}</p>
+                <p><strong>Müddət:</strong> ${order.time} Dəqiqə</p>
             ` : `<p><strong>Sürücü:</strong> Almayıb</p>`;
 
                 div.innerHTML = `
-                <p><strong>1)Ünvan:</strong> ${order.currentAddress.text}</p>
-                <p><strong>2)Ünvan:</strong> ${order.destinationAddress.text}</p>
-                <p><strong>3)Ünvan:</strong> ${order.destination2.text}</p>
+                <p><strong>1)</strong> ${order.currentAddress.text}</p>
+                <p><strong>2)</strong> ${order.destinationAddress.text}</p>
+                <p><strong>3)</strong> ${order.destination2 && order.destination2.text ? order.destination2.text : 'Məlumat yox'}</p>
                 ${driverInfo}
-                <p class="status ${statusClass}"><strong>Vəziyyət:</strong> ${statusText}</p>
+                <p class="status ${statusClass}"><strong>Sifari:</strong> ${statusText}</p>
                 <p><strong>Tamamlanıb?:</strong> ${order.isFinished ? 'Tamamlandı' : 'Davam edir'}</p>
                 <div class="buttons">
                     <button class="sil" onclick="sil('${order._id}')">Ləvğ Et</button>
@@ -419,6 +429,8 @@
                 container.appendChild(div);
             });
         });
+
+
 
         async function sil(orderId) {
             const response = await fetch('/api/taxis/request', {
@@ -450,7 +462,7 @@
             } else {
                 alert('yenilemə uğursuz oldu.');
             }
- 
+
         }
 
         async function tesdiqle(orderId) {
@@ -468,6 +480,7 @@
                 alert('Təsdiqləmə uğursuz oldu.');
             }
         }
+
     </script>
 </body>
 

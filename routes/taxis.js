@@ -39,7 +39,7 @@ router.post('/request', async (req, res) => {
       userId,
       tel: user.tel,
       name: user.name,
-      price
+      price,
     });
 
     const savedRequest = await taxiRequest.save();
@@ -426,6 +426,28 @@ router.post('/updateOrderStatus', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Güncelleme hatası' });
+  }
+});
+
+router.put('/order/:orderId/isTaken', async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const { isTaken } = req.body;
+
+    const updatedOrder = await TaxiRequest.findByIdAndUpdate(
+      orderId,
+      { isTaken: isTaken },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: 'Sipariş bulunamadı' });
+    }
+
+    res.status(200).json(updatedOrder);
+  } catch (error) {
+    console.error('Error updating order isTaken status on backend:', error);
+    res.status(500).json({ message: 'Sunucu hatası' });
   }
 });
 

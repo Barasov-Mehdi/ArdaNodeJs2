@@ -162,6 +162,7 @@
                     <h3>Sifariş ID: ${order._id}</h3>
                     <p><strong>Ünvan:</strong> ${order.currentAddress.text}</p>
                     <p><strong>Hədəf:</strong> ${order.destinationAddress.text}</p>
+                    <p><strong>Hədəf:</strong> ${order.destination2.text}</p>
                     ${driverInfo}
                     <p class="status ${statusClass}"><strong>Vəziyyət:</strong> ${statusText}</p>
                     <p><strong>İş vəziyyəti:</strong> ${order.isFinished ? 'Tamamlandı' : 'Davam edir'}</p>
@@ -176,6 +177,7 @@
             });
         });
 
+       
         async function sil(orderId) {
             const response = await fetch('/api/taxis/request', {
                 method: 'DELETE',
