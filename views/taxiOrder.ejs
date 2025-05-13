@@ -448,7 +448,7 @@
             // 5 saniyede bir yinele
             window.ordersRefreshInterval = setInterval(() => {
                 document.getElementById('searchForm').dispatchEvent(new Event('submit'));
-            }, 5000);
+            }, 3000);
             e.preventDefault();
 
             const userId = document.getElementById('userId').value;
