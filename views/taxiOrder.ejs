@@ -146,8 +146,71 @@
             background-color: gold;
             color: black;
         }
-    </style>
 
+        /* Medya sorgusu: küçük ekranlar için uyum */
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+                /* Genel font boyutunu küçült */
+            }
+
+            .container {
+                flex-direction: column-reverse;
+                padding: 20px;
+                max-width: 100%;
+            }
+
+            /* Containerlar genişliği ve padding ayarları */
+            .orderContaine,
+            .getOrderContainer {
+                padding: 20px;
+                margin: 0 10px;
+                border-radius: 8px;
+            }
+
+            /* Başlık boyutunu küçült */
+            h1 {
+                font-size: 17px;
+            }
+
+            /* Form alanlar */
+            form {
+                gap: 11px;
+            }
+
+            /* Input ve textarea boyutlarını ayarla */
+            input[type="text"],
+            input[type="number"],
+            textarea {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            /* Buton boyutlarını küçült */
+            button {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            /* Mesaj kutusu */
+            #message {
+                font-size: 14px;
+            }
+
+            /* Order container yüksekliğini ayarla */
+            #ordersContainer {
+                height: auto;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+
+            /* Sipariş kutuları */
+            .siparis {
+                padding: 12px;
+                font-size: 13px;
+            }
+        }
+    </style>
 </head>
 
 <body>
