@@ -463,6 +463,10 @@
             }
 
             orders.forEach(order => {
+                if (order.isFinished) {
+                    return; // Bu siparişi listede gösterme
+                }
+
                 const div = document.createElement('div');
                 div.className = 'siparis';
 
