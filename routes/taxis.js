@@ -319,28 +319,28 @@ router.post('/addOrderToUser', async (req, res) => {
 // routes/taxi.js dosyasına ekleyin
 
 // Siparişin isTaken durumunu güncelleme endpoint'i
-router.put('/order/:orderId/isTaken', async (req, res) => {
-  try {
-    const orderId = req.params.orderId;
-    const { isTaken } = req.body; // İstek gövdesinden isTaken değerini al
+// router.put('/order/:orderId/isTaken', async (req, res) => {
+//   try {
+//     const orderId = req.params.orderId;
+//     const { isTaken } = req.body; // İstek gövdesinden isTaken değerini al
 
-    // Siparişi ID'ye göre bul ve isTaken'ı güncelle
-    const updatedOrder = await TaxiRequest.findByIdAndUpdate(
-      orderId,
-      { isTaken: isTaken },
-      { new: true } // Güncellenmiş dökümanı geri döndür
-    );
+//     // Siparişi ID'ye göre bul ve isTaken'ı güncelle
+//     const updatedOrder = await TaxiRequest.findByIdAndUpdate(
+//       orderId,
+//       { isTaken: isTaken },
+//       { new: true } // Güncellenmiş dökümanı geri döndür
+//     );
 
-    if (!updatedOrder) {
-      return res.status(404).json({ message: 'Sipariş bulunamadı' });
-    }
+//     if (!updatedOrder) {
+//       return res.status(404).json({ message: 'Sipariş bulunamadı' });
+//     }
 
-    res.status(200).json(updatedOrder); // Başarılı yanıt döndür
-  } catch (error) {
-    console.error('Error updating order isTaken status on backend:', error);
-    res.status(500).json({ message: 'Sunucu hatası' });
-  }
-});
+//     res.status(200).json(updatedOrder); // Başarılı yanıt döndür
+//   } catch (error) {
+//     console.error('Error updating order isTaken status on backend:', error);
+//     res.status(500).json({ message: 'Sunucu hatası' });
+//   }
+// });
 
 router.put('/order/:orderId/complete', async (req, res) => {
   try {
@@ -429,14 +429,20 @@ router.post('/updateOrderStatus', async (req, res) => {
   }
 });
 
+// isTaken, isConfirmed ve isFinished alanlarını aynı anda güncellemek için
 router.put('/order/:orderId/isTaken', async (req, res) => {
   try {
     const orderId = req.params.orderId;
-    const { isTaken } = req.body;
+    const { isTaken, isConfirmed, isFinished } = req.body;
 
+    // Güncellenmiş alanlar
     const updatedOrder = await TaxiRequest.findByIdAndUpdate(
       orderId,
-      { isTaken: isTaken },
+      {
+        isTaken: isTaken,
+        isConfirmed: isConfirmed,
+        isFinished: isFinished
+      },
       { new: true }
     );
 
@@ -446,7 +452,7 @@ router.put('/order/:orderId/isTaken', async (req, res) => {
 
     res.status(200).json(updatedOrder);
   } catch (error) {
-    console.error('Error updating order isTaken status on backend:', error);
+    console.error('Error updating order status:', error);
     res.status(500).json({ message: 'Sunucu hatası' });
   }
 });
