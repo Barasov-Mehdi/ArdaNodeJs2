@@ -13,7 +13,8 @@ router.post('/request', async (req, res) => {
       additionalInfo,
       additionalData,
       userId,
-      price
+      price,
+      atAddress // eklenmiş alan
     } = req.body;
 
     // Gerekli alanlar kontrol
@@ -40,6 +41,7 @@ router.post('/request', async (req, res) => {
       tel: user.tel,
       name: user.name,
       price,
+      atAddress // eklenmiş alan
     });
 
     const savedRequest = await taxiRequest.save();
@@ -316,39 +318,12 @@ router.post('/addOrderToUser', async (req, res) => {
   }
 });
 
-// routes/taxi.js dosyasına ekleyin
-
-// Siparişin isTaken durumunu güncelleme endpoint'i
-// router.put('/order/:orderId/isTaken', async (req, res) => {
-//   try {
-//     const orderId = req.params.orderId;
-//     const { isTaken } = req.body; // İstek gövdesinden isTaken değerini al
-
-//     // Siparişi ID'ye göre bul ve isTaken'ı güncelle
-//     const updatedOrder = await TaxiRequest.findByIdAndUpdate(
-//       orderId,
-//       { isTaken: isTaken },
-//       { new: true } // Güncellenmiş dökümanı geri döndür
-//     );
-
-//     if (!updatedOrder) {
-//       return res.status(404).json({ message: 'Sipariş bulunamadı' });
-//     }
-
-//     res.status(200).json(updatedOrder); // Başarılı yanıt döndür
-//   } catch (error) {
-//     console.error('Error updating order isTaken status on backend:', error);
-//     res.status(500).json({ message: 'Sunucu hatası' });
-//   }
-// });
-
 router.put('/order/:orderId/complete', async (req, res) => {
   try {
     const orderId = req.params.orderId;
 
     console.log(`Completing order with ID: ${orderId}`); // İstek geldiğinde log
 
-    // Siparişi bul ve isTaken ile isFinished'ı true yap
     const completedOrder = await TaxiRequest.findByIdAndUpdate(
       orderId,
       { isTaken: false, isFinished: true }, // isTaken'ı da false yapalım, çünkü artık alınmış değil
@@ -369,13 +344,10 @@ router.put('/order/:orderId/complete', async (req, res) => {
   }
 });
 
-
-// GET route for displaying the delete user orders page
 router.get('/delete-user-orders-page', (req, res) => {
   res.render('deleteUserOrders'); // views klasöründe oluşturacağımız EJS dosyasına yönlendirir
 });
 
-// Kullanıcının tüm siparişlerini güncelle (isTaken=false, isFinished=false)
 router.post('/delete-user-orders', async (req, res) => {
   const { userId } = req.body;
 
@@ -454,6 +426,26 @@ router.put('/order/:orderId/isTaken', async (req, res) => {
   } catch (error) {
     console.error('Error updating order status:', error);
     res.status(500).json({ message: 'Sunucu hatası' });
+  }
+});
+
+router.put('/order/:orderId/setAtAddress', async (req, res) => {
+  const { atAddress } = req.body;
+  const { orderId } = req.params;
+
+  try {
+    const updatedOrder = await TaxiRequest.findByIdAndUpdate(
+      orderId,
+      { atAddress: atAddress },
+      { new: true }
+    );
+    if (!updatedOrder) {
+      return res.status(404).json({ message: 'Sipariş bulunamadı.' });
+    }
+    res.json(updatedOrder);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Güncellenirken hata oluştu.' });
   }
 });
 

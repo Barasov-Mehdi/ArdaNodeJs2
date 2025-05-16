@@ -73,10 +73,14 @@ const taxiRequestSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  isFinished: { 
+  isFinished: {
     type: Boolean,
-    default: false 
+    default: false
   },
+  atAddress: {
+    type: Boolean,
+    default: false
+  }
 
 });
 

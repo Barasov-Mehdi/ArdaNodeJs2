@@ -472,6 +472,7 @@
 
                 const statusText = order.isTaken ? 'Təsdiqlənib' : 'Təsdiqlənməyib';
                 const statusClass = order.isTaken ? 'Alindi' : 'Alinmadi';
+                const atAddressBox = order.atAddress ? 'Adresdədi' : 'Adresdə deyil';
 
                 const driverInfo = order.driverDetails ? `
                 <p><strong>Sürücü Adı:</strong> ${order.driverDetails.firstName || 'Bilinmir'}</p>
@@ -485,7 +486,8 @@
                 <p><strong>3)</strong> ${order.destination2 && order.destination2.text ? order.destination2.text : 'Məlumat yox'}</p>
                 ${driverInfo}
                 <p class="status ${statusClass}"><strong>Sifariş:</strong> ${statusText}</p>
-                <p><strong>Tamamlanıb?:</strong> ${order.isFinished ? 'Tamamlandı' : 'Davam edir'}</p>
+                <p><strong>Addressdə?:</strong> ${atAddressBox}</p>
+                <p><strong>Tamamlanıb?:</strong> ${order.isFinished ? 'Tamamlandı' : 'Çatdırılır'}</p>
                 <div class="buttons">
                     <button class="sil" onclick="sil('${order._id}')">Ləvğ Et</button>
                     <button class="durum" onclick="yenile('${order._id}', false, false)">Obşiyə At</button>
