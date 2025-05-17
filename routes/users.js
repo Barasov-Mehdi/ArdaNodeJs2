@@ -64,19 +64,18 @@ router.post('/register', async (req, res) => {
 
 // Login User
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+  const { email, tel } = req.body;
 
   try {
     // Check if user exists
     let user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ msg: 'Invalid credentials' });
+      return res.status(400).json({ msg: 'Email tapılmadı' });
     }
 
-    // Check if password matches
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ msg: 'Invalid credentials' });
+    // Check if tel matches
+    if (user.tel !== tel) {
+      return res.status(400).json({ msg: 'Yanlış telefon nömrəsi' });
     }
 
     // Return JWT
@@ -88,7 +87,7 @@ router.post('/login', async (req, res) => {
 
     jwt.sign(
       payload,
-      process.env.JWT_SECRET, // Gizli anahtar `.env` dosyasında
+      process.env.JWT_SECRET,
       { expiresIn: 360000 },
       (err, token) => {
         if (err) throw err;
@@ -100,6 +99,7 @@ router.post('/login', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
 
 // if not, you might want to add that or define how you get the user location
 router.get('/current-location', auth, async (req, res) => {

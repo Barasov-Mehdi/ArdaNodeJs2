@@ -2,18 +2,28 @@ const express = require('express');
 const connectDB = require('./config/db');
 const cors = require('cors');
 const app = express();
-const path = require('path'); 
+const path = require('path');
 require('dotenv').config();
 connectDB();
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views')); 
+app.set('views', path.join(__dirname, 'views'));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use(cors());
 app.use(express.static('public'));
-app.use(express.json()); 
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const indexRouter = require('./routes/index'); 
-app.use('/', indexRouter); 
+const indexRouter = require('./routes/index');
+app.use('/', indexRouter);
+
+app.get('/pricetiers', async (req, res) => {
+    try {
+        const PriceTier = require('./models/PriceTier');
+        const tiers = await PriceTier.find().sort('maxKm');
+        res.render('pricetiers', { tiers });
+    } catch (err) {
+        res.status(500).send('Sunucu hatası');
+    }
+});
 app.get('/register/user', (req, res) => {
     res.render('userRegister');
 });
@@ -21,18 +31,19 @@ app.get('/register/driver', (req, res) => {
     res.render('driverRegister');
 });
 app.get('/order/taxi', (req, res) => {
-    res.render('taxiOrder'); 
+    res.render('taxiOrder');
 });
 app.get('/add-coordinates', (req, res) => {
-    res.render('addCoordinates'); 
+    res.render('addCoordinates');
 });
 app.get('/admin/delete-drivers', (req, res) => {
-    res.render('deleteDrivers'); 
+    res.render('deleteDrivers');
 });
 app.use('/api/users', require('./routes/users'));
 app.use('/api/taxis', require('./routes/taxis'));
 app.use('/api/drivers', require('./routes/drivers'));
 app.use('/api/help', require('./routes/helps'));
 app.use('/api/coordinates', require('./routes/cordinatsRoutes'));
+app.use('/api/pricetiers', require('./routes/pricetiers'));
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
