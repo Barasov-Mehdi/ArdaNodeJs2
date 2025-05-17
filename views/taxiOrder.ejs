@@ -147,6 +147,22 @@
             color: black;
         }
 
+        .atAdresActive {
+            background-color: green;
+            border: 1px solid white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .atAdresNotActive {
+            background-color: gold;
+            border: 1px solid white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
         /* Medya sorgusu: küçük ekranlar için uyum */
         @media (max-width: 768px) {
             body {
@@ -209,6 +225,8 @@
                 padding: 12px;
                 font-size: 13px;
             }
+
+
         }
     </style>
 </head>
@@ -441,6 +459,7 @@
     <script>
 
         document.getElementById('searchForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
             // Önceki interval varsa durdur
             if (window.ordersRefreshInterval) {
                 clearInterval(window.ordersRefreshInterval);
@@ -448,8 +467,8 @@
             // 5 saniyede bir yinele
             window.ordersRefreshInterval = setInterval(() => {
                 document.getElementById('searchForm').dispatchEvent(new Event('submit'));
-            }, 3000);
-            e.preventDefault();
+            }, 2500);
+
 
             const userId = document.getElementById('userId').value;
             const response = await fetch(`/api/taxis/get-user-orders?userId=${userId}`);
@@ -462,6 +481,12 @@
                 return;
             }
 
+            // <p class="status ${statusClass}"><strong>Sifariş:</strong> ${statusText}</p>
+            // <p><strong>Tamamlanıb?:</strong> ${order.isFinished ? 'Tamamlandı' : 'Çatdırılır'}</p>
+            if (!window.playedSoundOrders) {
+                window.playedSoundOrders = new Set();
+            }
+
             orders.forEach(order => {
                 if (order.isFinished) {
                     return; // Bu siparişi listede gösterme
@@ -472,29 +497,38 @@
 
                 const statusText = order.isTaken ? 'Təsdiqlənib' : 'Təsdiqlənməyib';
                 const statusClass = order.isTaken ? 'Alindi' : 'Alinmadi';
-                const atAddressBox = order.atAddress ? 'Adresdədi' : 'Adresdə deyil';
+                const atAddressBox = order.atAddress ? '<p class="atAdresActive"></p>' : '<p class="atAdresNotActive"></p>';
+
+                if (order.atAddress && !window.playedSoundOrders.has(order._id)) {
+                    const audio = new Audio('/assets/successfully-done-complete-sound-6-SBA-300462024-preview.mp3');
+                    audio.play().catch((e) => {
+                        console.warn("Ses otomatik oynatılamadı:", e);
+                    });
+                    window.playedSoundOrders.add(order._id);
+                }
+
 
                 const driverInfo = order.driverDetails ? `
-                <p><strong>Sürücü Adı:</strong> ${order.driverDetails.firstName || 'Bilinmir'}</p>
-                <p><strong>Avtomobil Nömrəsi:</strong> ${order.driverDetails.carPlate || 'Bilinmir'}</p>
-                <p><strong>Müddət:</strong> ${order.time} Dəqiqə</p>
-            ` : `<p><strong>Sürücü:</strong> Almayıb</p>`;
+    <p><strong>Sürücü Adı:</strong> ${order.driverDetails.firstName || 'Bilinmir'}</p>
+    <p><strong>Avtomobil Nömrəsi:</strong> ${order.driverDetails.carPlate || 'Bilinmir'}</p>
+    <p><strong>Müddət:</strong> ${order.time} Dəqiqə</p>
+    ` : `<p><strong>Sürücü:</strong> Almayıb</p>`;
 
                 div.innerHTML = `
-                <p><strong>1)</strong> ${order.currentAddress.text}</p>
-                <p><strong>2)</strong> ${order.destinationAddress.text}</p>
-                <p><strong>3)</strong> ${order.destination2 && order.destination2.text ? order.destination2.text : 'Məlumat yox'}</p>
-                ${driverInfo}
-                <p class="status ${statusClass}"><strong>Sifariş:</strong> ${statusText}</p>
-                <p><strong>Addressdə?:</strong> ${atAddressBox}</p>
-                <p><strong>Tamamlanıb?:</strong> ${order.isFinished ? 'Tamamlandı' : 'Çatdırılır'}</p>
-                <div class="buttons">
-                    <button class="sil" onclick="sil('${order._id}')">Ləvğ Et</button>
-                    <button class="durum" onclick="yenile('${order._id}', false, false)">Obşiyə At</button>
-                    <!-- Əgər sifariş alınmışsa və təsdiqlənməyibsə, "Təsdiqlə" düyməsi görünəcək -->
-                    ${order.isTaken && !order.isConfirmed ? `<button class="confirm" onclick="tesdiqle('${order._id}')">Təsdiqlə</button>` : ''}
-                </div>
-            `;
+    <p><strong>1)</strong> ${order.currentAddress.text}</p>
+    <p><strong>2)</strong> ${order.destinationAddress.text}</p>
+    <p><strong>3)</strong> ${order.destination2 && order.destination2.text ? order.destination2.text : 'Məlumat yox'}
+    </p>
+    ${driverInfo}
+    <p>${atAddressBox}</p>
+    <div class="buttons">
+        <button class="sil" onclick="sil('${order._id}')">Ləvğ Et</button>
+        <button class="durum" onclick="yenile('${order._id}', false, false)">Obşiyə At</button>
+        <!-- Əgər sifariş alınmışsa və təsdiqlənməyibsə, "Təsdiqlə" düyməsi görünəcək -->
+        ${order.isTaken && !order.isConfirmed ? `<button class="confirm"
+            onclick="tesdiqle('${order._id}')">Təsdiqlə</button>` : ''}
+    </div>
+    `;
                 container.appendChild(div);
             });
         });
