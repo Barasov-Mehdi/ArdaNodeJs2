@@ -16,27 +16,27 @@ router.get('/me', auth, async (req, res) => {
   }
 });
 
-// Register User
+// routes/users.js
 router.post('/register', async (req, res) => {
-  console.log(req.body); // İstek gövdesini konsola yazdır
-  const { name, email, password, tel } = req.body;
+  const { name, email, tel } = req.body;
 
   try {
-    let user = await User.findOne({ email });
-    if (user) {
-      // Kullanıcı var ise, hata mesajı ile kayıt sayfasına döner
-      return res.render('register', { errorMessage: 'Kullanıcı mevcut. Lütfen başka bir email deneyin.' });
+    // Aynı email veya telefon var mı kontrol et
+    const existingUser = await User.findOne({ 
+      $or: [{ email: email }, { tel: tel }]
+    });
+
+    if (existingUser) {
+      // Aynı email veya telefon zaten kayıtlı ise hata döndür
+      return res.status(400).json({ msg: 'Bu email veya telefon numarası zaten kullanılıyor.' });
     }
 
-    user = new User({
+    // Yeni kullanıcı oluştur
+    const user = new User({
       name,
       email,
       tel,
-      password
     });
-
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
 
     await user.save();
 
@@ -51,14 +51,16 @@ router.post('/register', async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: 360000 },
       (err, token) => {
-        if (err) throw err;
+        if (err) {
+          console.error('JWT imzalama hatası:', err);
+          return res.status(500).json({ msg: 'JWT imzalama hatası' });
+        }
         res.json({ token });
       }
     );
   } catch (err) {
-    console.error(err.message);
-    // Sunucu hatası olursa, hata mesajı ile kayıt sayfasına döner
-    res.render('register', { errorMessage: 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.' });
+    console.error('Kayıt sırasında hata:', err);
+    res.status(500).json({ msg: 'Sunucu hatası' });
   }
 });
 
@@ -100,7 +102,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-
 // if not, you might want to add that or define how you get the user location
 router.get('/current-location', auth, async (req, res) => {
   try {
@@ -114,7 +115,5 @@ router.get('/current-location', auth, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
-
 
 module.exports = router;
