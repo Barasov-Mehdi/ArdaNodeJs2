@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+// git hubdan sildin deye bunu bura yazdin 
 const coordinateSchema = new mongoose.Schema({
     addressName: {
         type: String,
